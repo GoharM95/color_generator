@@ -4,14 +4,6 @@ import "./SingleColor.css";
 class SingleColor extends React.Component {
   state = { alert: false };
 
-  // ?????
-  //   useEffect(() => {
-  //     const timeout = setTimeout(() => {
-  //       setAlert(false);
-  //     }, 300000);
-  //     return () => clearTimeout(timeout);
-  //   }, [alert]);
-
   // USAGE
   // componentDidUpdate(prevProps) {
   //   // Typical usage (don't forget to compare props):
@@ -20,25 +12,27 @@ class SingleColor extends React.Component {
   //   }
   // }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevState.pokemons !== this.state.pokemons) {
-  //     console.log('pokemons state has changed.')
-  //   }
-  // }
-
   componentDidUpdate(prevProps, prevState) {
     const { alert } = this.state;
 
     if (prevState.alert !== alert) {
-      this.timeout = setTimeout(() => {
+      this.timeoutId = setTimeout(() => {
         this.setState({ alert: false });
       }, 3000);
     }
   }
 
   componentWillUnmount() {
-    return () => clearTimeout(this.timeout);
+    return () => clearTimeout(this.timeoutId);
   }
+
+  /// isn't updating state of alert when I want it to
+  handleColorClick = () => {
+    const hexValue = `#${this.state.hexColor}`;
+
+    this.setState({ alert: true });
+    navigator.clipboard.writeText(hexValue);
+  };
 
   render() {
     const { index, hexColor, rgb, weight, alert } = this.props;
@@ -49,10 +43,7 @@ class SingleColor extends React.Component {
       <div
         className={`color ${index > 10 && "lightColor"}`}
         style={{ backgroundColor: `rgb(${bcg})` }}
-        onClick={() => {
-          this.setState({ alert: true });
-          navigator.clipboard.writeText(hexValue);
-        }}
+        onClick={this.handleColorClick}
       >
         <p>{weight}%</p>
         <p>{hexValue}</p>
